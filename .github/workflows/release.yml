@@ -29,6 +29,14 @@ on:
           - alpha
           - beta
           - production
+      app_env:
+        description: 'Entorno Firebase del build (qa = ayutthaya-camp-qa). Tras probar un build QA en TestFlight, subir un build prod ANTES de mergear a prd.'
+        required: false
+        type: choice
+        default: 'prod'
+        options:
+          - prod
+          - qa
 
 # Igual que en ci.yml: versión pinneada, jamás 'stable' como flutter-version.
 env:
@@ -259,6 +267,9 @@ jobs:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          # 'qa' compila con --dart-define=APP_ENV=qa (proyecto ayutthaya-camp-qa).
+          # Los push por tag siempre son prod.
+          APP_ENV: ${{ github.event.inputs.app_env || 'prod' }}
         run: fastlane beta
 
       - name: Upload IPA artifact

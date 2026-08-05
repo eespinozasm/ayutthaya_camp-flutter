@@ -137,6 +137,18 @@ platform :ios do
   lane :beta do
     key = asc_api_key
 
+    # APP_ENV=qa compila contra el proyecto Firebase QA (ayutthaya-camp-qa);
+    # sin la variable se compila prod, igual que siempre.
+    # OJO: el lane `promote` (workflow App Store) envía a revisión el ÚLTIMO
+    # build de TestFlight de la versión del pubspec y no distingue entornos.
+    # Después de probar un build QA, SIEMPRE subir un build prod antes de
+    # mergear a prd, o el binario QA terminaría publicado en App Store.
+    app_env = ENV.fetch("APP_ENV", "prod")
+    if app_env == "qa"
+      UI.important("⚠️  BUILD QA: este binario apunta a ayutthaya-camp-qa.")
+      UI.important("    No mergear a prd sin subir un build prod después.")
+    end
+
     # 0. Recreate the dedicated signing keychain (no login-keychain prompts).
     keychain = prepare_signing_keychain
 
@@ -179,7 +191,8 @@ platform :ios do
       end
       begin
         sh("flutter pub get")
-        sh("flutter build ios --release --no-codesign --build-number=#{build} --build-name=#{v[:name]}")
+        env_define = app_env == "qa" ? " --dart-define=APP_ENV=qa" : ""
+        sh("flutter build ios --release --no-codesign --build-number=#{build} --build-name=#{v[:name]}#{env_define}")
       ensure
         saved_env.each { |k, v| ENV[k] = v if v }
       end

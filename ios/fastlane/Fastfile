@@ -304,6 +304,34 @@ platform :ios do
     UI.success("Enviado a revisión: #{v[:name]} (#{build}). Apple suele demorar 1-2 días.")
   end
 
+  desc "Certificado y perfil de DESARROLLO (para flutter run en dispositivos físicos)"
+  lane :dev_signing do |options|
+    key = asc_api_key
+    udid = options[:udid]
+    if udid
+      begin
+        Spaceship::ConnectAPI::Device.create(
+          name: options[:device_name] || "iPhone dev",
+          platform: "IOS",
+          udid: udid
+        )
+        UI.success("Dispositivo #{udid} registrado")
+      rescue => e
+        UI.message("Dispositivo ya registrado o error benigno: #{e.message}")
+      end
+    end
+
+    keychain = prepare_signing_keychain
+    match(
+      api_key: key,
+      type: "development",
+      force_for_new_devices: true,
+      keychain_name: keychain,
+      keychain_password: ENV.fetch("KEYCHAIN_PASSWORD")
+    )
+    UI.success("Certificado/perfil de desarrollo listos")
+  end
+
   desc "Habilita Push Notifications en el App ID y regenera el perfil (match force)"
   lane :enable_push do
     require "spaceship"

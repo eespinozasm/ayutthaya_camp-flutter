@@ -1,4 +1,4 @@
-git_url("https://github.com/eespinozas/ayutthaya-certificates.git")
+git_url("https://github.com/eespinozasm/ayutthaya-certificates.git")
 storage_mode("git")
 
 type("appstore") # The default type, can be: appstore, adhoc, enterprise or development

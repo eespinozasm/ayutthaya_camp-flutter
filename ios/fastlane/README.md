@@ -47,6 +47,14 @@ Build and upload a new beta to TestFlight
 
 Envía a revisión de App Store el último build de TestFlight de la versión actual (sin recompilar)
 
+### ios dev_signing
+
+```sh
+[bundle exec] fastlane ios dev_signing
+```
+
+Certificado y perfil de DESARROLLO (para flutter run en dispositivos físicos)
+
 ### ios enable_push
 
 ```sh

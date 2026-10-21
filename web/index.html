@@ -18,12 +18,15 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="Ayutthaya Camp - Muay Thai & Fitness">
+  <!-- viewport-fit=cover: la app dibuja detrás del notch/barra de estado en iOS;
+       Flutter traduce los safe-area insets a MediaQuery.padding para el SafeArea. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="ayutthaya_camp">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Ayutthaya Camp">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
@@ -31,6 +34,9 @@
 
   <title>Ayutthaya Camp</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+    html, body { background: #0F0F0F; margin: 0; padding: 0; }
+  </style>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>

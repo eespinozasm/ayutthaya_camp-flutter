@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../core/config/app_constants.dart';
+import '../../../../core/error/error_handler.dart';
 import '../../../../core/services/auth_email_service.dart';
 import '../../../../core/services/notification_service.dart';
 
@@ -19,6 +20,10 @@ class AuthViewModel extends ChangeNotifier {
   bool _isCheckingSession = false;
   User? _user;
   String _userRole = 'student'; // 'student' o 'admin'
+  // Alcance de clases para admins: 'all' ve todas (dueño/head coach),
+  // 'own' solo las clases donde figura como instructor (instructorName).
+  String _classVisibility = 'all';
+  String? _instructorName;
   String _membershipStatus = 'none'; // none, pending, active, expired, frozen
   bool _mustChangePassword = false; // Cuenta creada con contraseña temporal
   DateTime? _expirationDate;
@@ -28,6 +33,12 @@ class AuthViewModel extends ChangeNotifier {
   User? get currentUser => _user;
   String get userRole => _userRole;
   bool get isAdmin => _userRole == 'admin';
+  String get classVisibility => _classVisibility;
+  String? get instructorName => _instructorName;
+
+  /// Admin restringido: solo ve las clases donde es instructor.
+  bool get seesOnlyOwnClasses =>
+      isAdmin && _classVisibility == 'own' && _instructorName != null;
   bool get mustChangePassword => _mustChangePassword;
   String get membershipStatus => _membershipStatus;
   DateTime? get expirationDate => _expirationDate;
@@ -51,6 +62,8 @@ class AuthViewModel extends ChangeNotifier {
         await _loadUserRole(user.uid);
       } else {
         _userRole = 'student';
+        _classVisibility = 'all';
+        _instructorName = null;
         _membershipStatus = 'none';
         _expirationDate = null;
       }
@@ -68,6 +81,8 @@ class AuthViewModel extends ChangeNotifier {
       if (doc.exists) {
         final data = doc.data()!;
         _userRole = data['role'] ?? 'student';
+        _classVisibility = data['classVisibility'] ?? 'all';
+        _instructorName = data['instructorName'];
         _membershipStatus = data['membershipStatus'] ?? 'none';
         _mustChangePassword = data['mustChangePassword'] == true;
 
@@ -295,29 +310,10 @@ class AuthViewModel extends ChangeNotifier {
       await Future.delayed(const Duration(milliseconds: 100));
 
       return true;
-    } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'user-not-found':
-          _error = 'Usuario no encontrado';
-          break;
-        case 'wrong-password':
-          _error = 'Contraseña incorrecta';
-          break;
-        case 'invalid-email':
-          _error = 'Email inválido';
-          break;
-        case 'user-disabled':
-          _error = 'Usuario deshabilitado';
-          break;
-        case 'too-many-requests':
-          _error = 'Demasiados intentos, intenta más tarde';
-          break;
-        default:
-          _error = e.message ?? 'Error al iniciar sesión';
-      }
-      return false;
     } catch (e) {
-      _error = e.toString();
+      // ErrorHandler traduce todos los códigos de Firebase Auth (incluido
+      // invalid-credential, que el switch anterior no cubría) a español.
+      _error = ErrorHandler.getUserMessage(e);
       return false;
     } finally {
       _loading = false;

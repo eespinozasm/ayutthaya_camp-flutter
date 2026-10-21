@@ -17,7 +17,6 @@ import '../features/payments/viewmodels/payment_viewmodel.dart';
 import '../features/plans/viewmodels/plan_viewmodel.dart';
 import '../features/schedules/viewmodels/class_schedule_viewmodel.dart';
 import '../features/bookings/viewmodels/booking_viewmodel.dart';
-import '../features/gamification/presentation/pages/avatar_test_screen.dart';
 
 import 'theme.dart';
 
@@ -28,7 +27,6 @@ class Routes {
   static const dashboard = '/dashboard';
   static const shell = '/shell'; // (lo puedes dejar si se usa en otra parte)
   static const mainNav = '/main'; // 👈 NUEVA ruta (navbar)
-  static const avatarTest = '/avatar-test'; // Test screen for avatar animations
   static const beta = '/beta'; // Inscripción a la beta de Android
 }
 
@@ -92,8 +90,6 @@ class App extends StatelessWidget {
           Routes.dashboard: (_) => const DashboardPage(),
           // Routes.shell: (_) => const ShellPage(), // ya no lo usamos como pantalla inicial
           Routes.mainNav: (_) => const MainNavBar(), // 👈 ruta a la navbar
-          Routes.avatarTest: (_) =>
-              const AvatarTestScreen(), // Avatar animation test screen
           Routes.beta: (_) => const BetaSignupPage(), // Inscripción a la beta
         },
 
